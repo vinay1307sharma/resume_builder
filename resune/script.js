@@ -43,41 +43,89 @@ function downloadPDF() {
   win.print();
 }
 
-function checkATS() {
-  const job = document.getElementById("jobTitle").value.toLowerCase();
-  const content = (
-    document.getElementById("summary").value +
-    " " +
-    document.getElementById("education").value +
-    " " +
-    document.getElementById("skills").value +
-    " " +
-    document.getElementById("experience").value
-  ).toLowerCase();
+async function extractTextFromPDF(file) {
+  const pdfjsLib = window['pdfjs-dist/build/pdf'];
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = "";
 
-  const keywordMap = {
-    "frontend developer": ["html", "css", "javascript", "react", "responsive", "ui", "accessibility"],
-    "backend developer": ["node", "express", "database", "api", "rest", "mongodb", "sql"],
-    "data analyst": ["excel", "sql", "python", "tableau", "data", "visualization", "analysis"]
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(item => item.str).join(" ");
+    fullText += pageText + " ";
+  }
+
+  return fullText.toLowerCase();
+}
+
+async function checkATS() {
+  const file = document.getElementById("resumeFile").files[0];
+  const userProfile = document.getElementById("jobProfile").value.trim().toLowerCase();
+
+  let content = "";
+
+  if (file) {
+    content = await extractTextFromPDF(file);
+  } else {
+    content = (
+      document.getElementById("summary").value +
+      " " +
+      document.getElementById("education").value +
+      " " +
+      document.getElementById("skills").value +
+      " " +
+      document.getElementById("experience").value
+    ).toLowerCase();
+  }
+
+  const jobProfiles = {
+    "frontend developer": ["html", "css", "javascript", "react", "vue", "ui", "responsive", "bootstrap"],
+    "backend developer": ["node", "express", "database", "sql", "api", "authentication", "mongodb", "server"],
+    "data analyst": ["excel", "sql", "tableau", "power bi", "python", "data analysis", "visualization", "statistics"],
+    "graphic designer": ["photoshop", "illustrator", "figma", "adobe", "branding", "typography", "layout"],
+    "software engineer": ["git", "ci", "testing", "agile", "oop", "java", "python", "design patterns"]
   };
 
-  const keywords = keywordMap[job] || [];
-  let found = [];
-  let missing = [];
+  let profileToUse = userProfile || "custom";
+  let keywords = [];
 
-  keywords.forEach(word => {
-    if (content.includes(word)) {
-      found.push(word);
-    } else {
-      missing.push(word);
+  if (userProfile && jobProfiles[userProfile]) {
+    keywords = jobProfiles[userProfile];
+  } else if (userProfile && !jobProfiles[userProfile]) {
+    // Custom profile entered — split into words and use as keywords
+    keywords = userProfile.split(/\s+/).filter(word => word.length > 2);
+  } else {
+    // Auto-detect from predefined profiles
+    let maxMatches = 0;
+    for (let profile in jobProfiles) {
+      const matches = jobProfiles[profile].filter(keyword => content.includes(keyword)).length;
+      if (matches > maxMatches) {
+        maxMatches = matches;
+        profileToUse = profile;
+        keywords = jobProfiles[profile];
+      }
     }
+    if (!keywords.length) {
+      document.getElementById("atsResults").innerHTML = `<p style="color:red;">⚠️ Could not detect a suitable job profile.</p>`;
+      return;
+    }
+  }
+
+  const found = [], missing = [];
+  keywords.forEach(word => {
+    if (content.includes(word)) found.push(word);
+    else missing.push(word);
   });
 
+  const score = Math.round((found.length / keywords.length) * 100);
+
   const result = `
-    <strong>ATS Result:</strong> ${found.length >= keywords.length * 0.7 ? "✅ Good Match" : "⚠️ Needs Improvement"}<br/>
-    <strong>Matched:</strong> ${found.join(", ") || "None"}<br/>
-    <strong>Missing:</strong> ${missing.join(", ") || "None"}<br/>
-    <strong>Total Keywords:</strong> ${keywords.length}
+    <p><strong>🧠 Profile Used:</strong> ${profileToUse}</p>
+    <p><strong>✅ Matched Keywords:</strong> ${found.join(", ") || "None"}</p>
+    <p><strong>❌ Missing Keywords:</strong> ${missing.join(", ") || "None"}</p>
+    <p><strong>📊 ATS Score:</strong> ${score}%</p>
+    <p><strong>📝 Result:</strong> ${score >= 70 ? "✅ Good Match" : "⚠️ Needs Improvement"}</p>
   `;
 
   document.getElementById("atsResults").innerHTML = result;

@@ -1,8 +1,9 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Smart Resume Builder</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -44,8 +45,8 @@
         <label>Experience</label>
         <textarea id="experience" rows="2" placeholder="Experience..."></textarea>
 
-        <button onclick="updateResume()">🎯 Preview</button>
-        <button onclick="downloadPDF()">⬇️ Download PDF</button>
+        <button onclick="updateResume()"><span>🎯</span> Preview</button>
+        <button onclick="downloadPDF()"><span>⬇️</span> Download PDF</button>
       </div>
 
       <div class="preview-section light" id="resume">
@@ -72,13 +73,19 @@
 
     <div class="ats-checker">
       <h2>📊 ATS Compatibility Check</h2>
-      <label for="jobTitle">Target Job Title:</label>
-      <input type="text" id="jobTitle" placeholder="e.g. Frontend Developer" />
+
+      <label for="jobProfile">Enter Job Profile (optional):</label>
+      <input type="text" id="jobProfile" placeholder="e.g., Data Analyst or Custom Title" />
+
+      <label for="resumeFile">Upload Resume (PDF):</label>
+      <input type="file" id="resumeFile" accept=".pdf" />
+
       <button onclick="checkATS()">Check Resume</button>
       <div id="atsResults"></div>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
