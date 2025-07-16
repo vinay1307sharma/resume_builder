@@ -10,14 +10,10 @@ function updateResume() {
 function previewPhoto() {
   const file = document.getElementById("photo").files[0];
   const reader = new FileReader();
-  reader.onloadend = function () {
+  reader.onloadend = () => {
     document.getElementById("preview-photo").src = reader.result;
   };
-  if (file) {
-    reader.readAsDataURL(file);
-  } else {
-    document.getElementById("preview-photo").src = "";
-  }
+  if (file) reader.readAsDataURL(file);
 }
 
 function switchTheme() {
@@ -25,6 +21,13 @@ function switchTheme() {
   const resume = document.getElementById("resume");
   resume.classList.remove("light", "dark");
   resume.classList.add(theme);
+}
+
+function switchTemplate() {
+  const template = document.getElementById("template").value;
+  const resume = document.getElementById("resume");
+  resume.classList.remove("template1", "template2");
+  resume.classList.add(template);
 }
 
 function downloadPDF() {
@@ -48,21 +51,17 @@ async function extractTextFromPDF(file) {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = "";
-
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const pageText = content.items.map(item => item.str).join(" ");
-    fullText += pageText + " ";
+    fullText += content.items.map(item => item.str).join(" ") + " ";
   }
-
   return fullText.toLowerCase();
 }
 
 async function checkATS() {
   const file = document.getElementById("resumeFile").files[0];
-  const userProfile = document.getElementById("jobProfile").value.trim().toLowerCase();
-
+  const jobInput = document.getElementById("jobProfile").value.trim().toLowerCase();
   let content = "";
 
   if (file) {
@@ -87,16 +86,14 @@ async function checkATS() {
     "software engineer": ["git", "ci", "testing", "agile", "oop", "java", "python", "design patterns"]
   };
 
-  let profileToUse = userProfile || "custom";
+  let profileToUse = jobInput || "custom";
   let keywords = [];
 
-  if (userProfile && jobProfiles[userProfile]) {
-    keywords = jobProfiles[userProfile];
-  } else if (userProfile && !jobProfiles[userProfile]) {
-    // Custom profile entered — split into words and use as keywords
-    keywords = userProfile.split(/\s+/).filter(word => word.length > 2);
+  if (jobInput && jobProfiles[jobInput]) {
+    keywords = jobProfiles[jobInput];
+  } else if (jobInput && !jobProfiles[jobInput]) {
+    keywords = jobInput.split(/\s+/).filter(word => word.length > 2);
   } else {
-    // Auto-detect from predefined profiles
     let maxMatches = 0;
     for (let profile in jobProfiles) {
       const matches = jobProfiles[profile].filter(keyword => content.includes(keyword)).length;
@@ -119,7 +116,6 @@ async function checkATS() {
   });
 
   const score = Math.round((found.length / keywords.length) * 100);
-
   const result = `
     <p><strong>🧠 Profile Used:</strong> ${profileToUse}</p>
     <p><strong>✅ Matched Keywords:</strong> ${found.join(", ") || "None"}</p>
@@ -127,6 +123,5 @@ async function checkATS() {
     <p><strong>📊 ATS Score:</strong> ${score}%</p>
     <p><strong>📝 Result:</strong> ${score >= 70 ? "✅ Good Match" : "⚠️ Needs Improvement"}</p>
   `;
-
   document.getElementById("atsResults").innerHTML = result;
 }

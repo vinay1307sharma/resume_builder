@@ -25,9 +25,9 @@ h1 {
 .theme-switch {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
-  gap: 10px;
+  gap: 20px;
   align-items: center;
+  margin-bottom: 30px;
 }
 
 .main {
@@ -44,7 +44,6 @@ h1 {
   background: white;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-  transition: all 0.4s ease;
 }
 
 label {
@@ -92,10 +91,7 @@ button:hover {
   background: #2563eb;
 }
 
-.preview-section {
-  border: 2px dashed #e2e8f0;
-}
-
+/* Themes */
 .preview-section.light {
   background: #ffffff;
   color: #1e293b;
@@ -104,6 +100,18 @@ button:hover {
 .preview-section.dark {
   background: #1e293b;
   color: #ffffff;
+}
+
+/* Templates */
+.preview-section.template1 {
+  border: 2px dashed #e2e8f0;
+}
+
+.preview-section.template2 {
+  border: 2px solid #94a3b8;
+  font-family: 'Courier New', monospace;
+  background: #fef3c7;
+  color: #111827;
 }
 
 .preview-section img {
@@ -117,7 +125,6 @@ button:hover {
 
 .preview-section h3 {
   margin-top: 20px;
-  color: #64748b;
   font-size: 1.1rem;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 4px;
