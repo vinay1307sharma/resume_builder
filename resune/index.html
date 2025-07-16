@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Resume Builder</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Smart Resume Builder</h1>
+
+    <div class="theme-switch">
+      <label for="theme">Choose Template:</label>
+      <select id="theme" onchange="switchTheme()">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+
+    <div class="main">
+      <div class="form-section">
+        <h2>📋 Enter Your Info</h2>
+
+        <label>Profile Photo</label>
+        <input type="file" id="photo" accept="image/*" onchange="previewPhoto()" />
+
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" />
+
+        <label>Email</label>
+        <input type="email" id="email" placeholder="john@example.com" />
+
+        <label>Summary</label>
+        <textarea id="summary" rows="2" placeholder="Professional summary..."></textarea>
+
+        <label>Education</label>
+        <textarea id="education" rows="2" placeholder="Education details..."></textarea>
+
+        <label>Skills</label>
+        <textarea id="skills" rows="2" placeholder="e.g. HTML, CSS, JS"></textarea>
+
+        <label>Experience</label>
+        <textarea id="experience" rows="2" placeholder="Experience..."></textarea>
+
+        <button onclick="updateResume()">🎯 Preview</button>
+        <button onclick="downloadPDF()">⬇️ Download PDF</button>
+      </div>
+
+      <div class="preview-section light" id="resume">
+        <div id="preview-photo-container">
+          <img id="preview-photo" alt="Profile Photo" />
+        </div>
+
+        <h2 id="preview-name">Your Name</h2>
+        <p id="preview-email">you@example.com</p>
+
+        <h3>Summary</h3>
+        <p id="preview-summary"></p>
+
+        <h3>Education</h3>
+        <p id="preview-education"></p>
+
+        <h3>Skills</h3>
+        <p id="preview-skills"></p>
+
+        <h3>Experience</h3>
+        <p id="preview-experience"></p>
+      </div>
+    </div>
+
+    <div class="ats-checker">
+      <h2>📊 ATS Compatibility Check</h2>
+      <label for="jobTitle">Target Job Title:</label>
+      <input type="text" id="jobTitle" placeholder="e.g. Frontend Developer" />
+      <button onclick="checkATS()">Check Resume</button>
+      <div id="atsResults"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
